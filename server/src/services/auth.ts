@@ -37,3 +37,23 @@ export const signToken = (username: string, email: string, _id: unknown) => {
 
   return jwt.sign(payload, secretKey, { expiresIn: '1h' });
 };
+
+// Added middleware function for GraphQL context
+export const contextMiddleware = ({ req }: { req: Request }) => {
+  const authHeader = req.headers.authorization;
+
+  if (authHeader) {
+    const token = authHeader.split(' ')[1];
+    const secretKey = process.env.JWT_SECRET_KEY || '';
+
+    try {
+      const user = jwt.verify(token, secretKey) as JwtPayload;
+      return { user };
+    } catch (err) {
+      console.error('Invalid token:', err);
+      return {};
+    }
+  }
+
+  return {};
+};
