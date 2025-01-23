@@ -88,4 +88,3 @@ const SavedBooks = () => {
 };
 
 export default SavedBooks;
-</div></Card.Body>
