@@ -25,14 +25,15 @@ async function startApolloServer() {
   const server = new ApolloServer({
     typeDefs,
     resolvers,
-    context: contextMiddleware,
   });
 
   // Start the Apollo Server
   await server.start();
 
   // Apply Apollo Server middleware to Express
-  app.use('/graphql', expressMiddleware(server));
+  app.use('/graphql', expressMiddleware(server, {
+    context: async ({ req }) => contextMiddleware({ req }),
+  }));
 
   // Start the Express server
   db.once('open', () => {

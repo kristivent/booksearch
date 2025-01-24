@@ -4,6 +4,7 @@ import { GET_ME } from '../utils/queries';
 import { REMOVE_BOOK } from '../utils/mutations';
 import { removeBookId } from '../utils/localStorage';
 import Auth from '../utils/auth';
+import type { Book } from '../models/Book';
 
 const SavedBooks = () => {
   const { loading, data } = useQuery(GET_ME);
@@ -55,7 +56,7 @@ const SavedBooks = () => {
             : 'You have no saved books!'}
         </h2>
         <Row>
-          {userData.savedBooks.map((book) => {
+          {userData.savedBooks.map((book : Book) => {
             return (
               <Col md='4'>
                 <Card key={book.bookId} border='dark'>
