@@ -1,18 +1,26 @@
 import { useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
-import { createUser } from '../utils/API';
+
 import Auth from '../utils/auth';
 import type { User } from '../models/User';
+import { ADD_USER } from '../utils/mutations';
+import { useMutation } from '@apollo/client'; // Import the useMutation hook
+
+interface SignupFormProps {
+  handleModalClose: () => void;
+}
 
 // biome-ignore lint/correctness/noEmptyPattern: <explanation>
-const SignupForm = ({}: { handleModalClose: () => void }) => {
+const SignupForm: React.FC<SignupFormProps> = ({ handleModalClose }) => {
   // set initial form state
   const [userFormData, setUserFormData] = useState<User>({ username: '', email: '', password: '', savedBooks: [] });
   // set state for form validation
   const [validated] = useState(false);
   // set state for alert
   const [showAlert, setShowAlert] = useState(false);
+
+  const [addUser] = useMutation(ADD_USER); // use the useMutation hook to execute the ADD_USER mutation in the SignupForm component
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -28,27 +36,17 @@ const SignupForm = ({}: { handleModalClose: () => void }) => {
       event.preventDefault();
       event.stopPropagation();
     }
-
     try {
-      const response = await createUser(userFormData);
+      const { data } = await addUser({
+        variables: { ...userFormData },
+      });
 
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
-
-      const { token } = await response.json();
-      Auth.login(token);
+      Auth.login(data.addUser.token);
+      handleModalClose();
     } catch (err) {
       console.error(err);
       setShowAlert(true);
     }
-
-    setUserFormData({
-      username: '',
-      email: '',
-      password: '',
-      savedBooks: [],
-    });
   };
 
   return (
@@ -110,3 +108,4 @@ const SignupForm = ({}: { handleModalClose: () => void }) => {
 };
 
 export default SignupForm;
+
