@@ -6,9 +6,15 @@ import { typeDefs, resolvers } from './schemas/index.js'; //import typedefs and 
 import db from './config/connection.js';
 import routes from './routes/index.js';
 import { contextMiddleware } from './services/auth.js'; //import contextMiddleware from auth.js
+import { fileURLToPath } from 'node:url';
 
 const app: Application = express();
 const PORT = process.env.PORT || 3001;
+
+// create __dirname and __filename variables
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
